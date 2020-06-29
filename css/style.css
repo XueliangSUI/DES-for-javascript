@@ -1,0 +1,9 @@
+.SBox{
+	margin: 40px 0;
+}
+
+.SBox .col{
+	display: inline-block;
+	width:40px;
+	text-align: center;
+}
