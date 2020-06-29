@@ -46,7 +46,7 @@ function getCDArr(C, D, k56) {
 	D[15] = moveLeft(D[14], 2)
 	C[16] = moveLeft(C[15], 1)
 	D[16] = moveLeft(D[15], 1)
-	console.log(C, D)
+	// console.log(C, D)
 }
 
 
@@ -75,14 +75,14 @@ function moveLeft(Arr, bit) {
  */
 function getKChildArr(C,D,PC_2){
 	let kChild = [];
-	for(let i=1;i<C.length;i++){
+	for(let i=0;i<C.length;i++){
 		kChild.push([])
 		for(let j =0;j<PC_2.length;j++){
-			kChild[i-1][j] =C[i].concat(D[i])[PC_2[j]-1] 
+			kChild[i][j] =C[i].concat(D[i])[PC_2[j]-1] 
 		}
 		
 	}
-	console.log(kChild)
+	// console.log(kChild)
 	return kChild
 }
 
@@ -92,7 +92,22 @@ function getKChildArr(C,D,PC_2){
  * @param {Object} initDisplace
  */
 function letMDisplace(M,initDisplace){
+	let IP = []
 	for(let i=0;i<initDisplace.length;i++){
-		
+		IP[i] = M[initDisplace[i]-1]
 	}
+	// console.log(IP)
+	return IP
+}
+
+
+function getFinal(L,R,IP,kChild){
+	L[0] = IP.slice(0,32)
+	R[0] = IP.slice(32)
+	for(let i=1;i<17;i++){
+		L[i] = R[i-1]
+		//************************************
+		R[i] = L[i-1]
+	}
+	console.log(L,R)
 }
