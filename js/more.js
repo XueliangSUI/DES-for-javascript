@@ -126,10 +126,10 @@ function getFinal({
 	L[0] = IP.slice(0, 32)
 	R[0] = IP.slice(32)
 
-	// console.log(kChild48[1])
+	console.log(kChild48[1])
 	for (let i = 1; i < 17; i++) {
 		L[i] = R[i - 1]
-		
+		 
 		ER[i - 1] = getERn(R[i - 1], E)
 		ERXORK[i - 1] = XOR(ER[i - 1], kChild48[i])
 		ERXORK_8x6[i - 1] = letERXORK_8x6(ERXORK[i - 1])
