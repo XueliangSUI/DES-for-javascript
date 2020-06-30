@@ -135,9 +135,9 @@ function getFinal({
 		ERXORK[i - 1] = XOR(ER[i - 1], kChild48[i])
 		ERXORK_8x6[i - 1] = letERXORK_8x6(ERXORK[i - 1])
 		ERXORK_8x4[i - 1] = getERXORK_8x4(ERXORK_8x6[i - 1], S1, S2, S3, S4, S5, S6, S7, S8, P)
-		console.log('P置换', getPDisplace(ERXORK_8x4[i - 1], P))
+		// console.log('P置换', getPDisplace(ERXORK_8x4[i - 1], P))
 		console.log('P置换', binary2Hex(getPDisplace(ERXORK_8x4[i - 1], P)))
-		R[i] = XOR(L[i - 1], getPDisplace(ERXORK_8x4[0], P))
+		R[i] = XOR(L[i - 1], getPDisplace(ERXORK_8x4[i-1], P))
 		console.log("第", i, "轮，\nER[", i - 1, "]为", ER[i - 1], "\nERXORK_8x6[", i - 1, "]为", ERXORK_8x6[i - 1], `\nL[${i}]为`,
 			L[i], `\nR${i}为`, R[i], `\nR${i}为`,binary2Hex(R[i]))
 	}
