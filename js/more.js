@@ -294,7 +294,10 @@ function getFinalDisplace(L16, R16, finalDisplaceArr) {
 	return result
 }
 
-
+/**
+ * 二进制转十六进制
+ * @param {Object} binary
+ */
 function binary2Hex(binary) {
 	let hex = []
 	let t = ''
@@ -363,4 +366,78 @@ function binary2Hex(binary) {
 	}
 
 	return hex
+}
+
+/**
+ * 十六进制转二进制
+ * @param {Object} hex
+ */
+function hex2Binary(hex) {
+	let binary = []
+	let t = ''
+	let hex_array = [{
+		key: 0,
+		val: "0000"
+	}, {
+		key: 1,
+		val: "0001"
+	}, {
+		key: 2,
+		val: "0010"
+	}, {
+		key: 3,
+		val: "0011"
+	}, {
+		key: 4,
+		val: "0100"
+	}, {
+		key: 5,
+		val: "0101"
+	}, {
+		key: 6,
+		val: "0110"
+	}, {
+		key: 7,
+		val: "0111"
+	}, {
+		key: 8,
+		val: "1000"
+	}, {
+		key: 9,
+		val: "1001"
+	}, {
+		key: 'a',
+		val: "1010"
+	}, {
+		key: 'b',
+		val: "1011"
+	}, {
+		key: 'c',
+		val: "1100"
+	}, {
+		key: 'd',
+		val: "1101"
+	}, {
+		key: 'e',
+		val: "1110"
+	}, {
+		key: 'f',
+		val: "1111"
+	}]
+
+	for (let i = 0; i < hex.length; i++) {
+		if (i % 4 == 3) {
+			t = hex[i - 3].toString() + hex[i - 2] + hex[i - 1] + hex[i]
+			// console.log(i)
+			for (let j = 0; j < hex_array.length; j++) {
+				if (t == hex_array[j].val) {
+					hex.push(hex_array[j].key)
+				}
+			}
+		} else {
+			continue
+		}
+	}
+
+	return binary
 }

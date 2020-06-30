@@ -9,6 +9,23 @@
 	<body>
 		<div id="app">
 			<div id="">
+				<div id="">
+					<input type="" name="" id="" value="" maxlength="16" placeholder="16位十六进制明文" v-model="MStr" @input="reEncode" />
+				</div>
+				<div id="">
+					<input type="" name="" id="" value="" maxlength="16" placeholder="16位十六进制秘钥" v-model="KStr" @input="reEncode" />
+				</div>
+				<div class="button-red">
+					加密
+				</div>
+			</div>
+			<div id="">
+				最终逆置换结果二进制密文{{finalDisplaceResult}}
+			</div>
+			<div id="">
+				十六进制密文{{ciphertext}}
+			</div>
+			<div id="">
 				k16 {{kHex}}
 			</div>
 			<div id="">
@@ -171,6 +188,7 @@
 				el: "#app",
 				data: function() {
 					return {
+						MStr: '0000000000000000',
 						MHex: ['0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0'],
 						M: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
 							0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
@@ -182,6 +200,7 @@
 						ERXORK: [],
 						ERXORK_8x6: [],
 						ERXORK_8x4: [],
+						KStr: '0000000000000000',
 						kHex: ['0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0'],
 						k64: ['00000000', ' 00000000', '00000000', '00000000', '00000000', '00000000', '00000000', '00000000'],
 						k64Arr: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
@@ -327,23 +346,25 @@
 							16, 7, 20, 21, 29, 12, 28, 17, 1, 15, 23, 26, 5, 18, 31, 10,
 							2, 8, 24, 14, 32, 27, 3, 9, 19, 13, 30, 6, 22, 11, 4, 25
 						]
-
 					}
-
-
 				},
 				mounted: function() {
-					//64位key经过PC-1转换成56位 
-					this.k56 = k64Tok56(this.k64Arr, this.PC_1Arr)
-					//获得16轮的C和D，拼接形成16轮的K，再用PC-2生成16个childK
-					getCDArr(this.C, this.D, this.k56)
-					this.kChild48 = getKChildArr(this.C, this.D, this.PC_2Arr)
-					//明文初始置换
-					this.IP = letMDisplace(this.M, this.initDisplaceArr)
-					//16轮计算，得出最终区块
-					this.finalDisplaceResult = getFinal(this.$data)
-					//将二进制逆置换结果转换为16进制密文
-					this.ciphertext = binary2Hex(this.finalDisplaceResult)
+					this.reEncode()
+				},
+				methods:{
+					reEncode:function(){
+						//64位key经过PC-1转换成56位
+						this.k56 = k64Tok56(this.k64Arr, this.PC_1Arr)
+						//获得16轮的C和D，拼接形成16轮的K，再用PC-2生成16个childK
+						getCDArr(this.C, this.D, this.k56)
+						this.kChild48 = getKChildArr(this.C, this.D, this.PC_2Arr)
+						//明文初始置换
+						this.IP = letMDisplace(this.M, this.initDisplaceArr)
+						//16轮计算，得出最终区块
+						this.finalDisplaceResult = getFinal(this.$data)
+						//将二进制逆置换结果转换为16进制密文
+						this.ciphertext = binary2Hex(this.finalDisplaceResult)
+					}
 				}
 			})
 		}
