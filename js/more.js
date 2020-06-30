@@ -101,23 +101,46 @@ function letMDisplace(M, initDisplace) {
 }
 
 
-function getFinal({L, R, IP, kChild48, E,ER,ERXORK,ERXORK_8x6,ERXORK_8x4,S1,S2,S3,S4,S5,S6,S7,S8}) {
+function getFinal({
+	L,
+	R,
+	IP,
+	kChild48,
+	E,
+	ER,
+	ERXORK,
+	ERXORK_8x6,
+	ERXORK_8x4,
+	S1,
+	S2,
+	S3,
+	S4,
+	S5,
+	S6,
+	S7,
+	S8,
+	P
+}) {
 	L.push([])
 	R.push([])
 	L[0] = IP.slice(0, 32)
 	R[0] = IP.slice(32)
 
-	console.log(kChild48[1])
+	// console.log(kChild48[1])
 	for (let i = 1; i < 17; i++) {
 		L[i] = R[i - 1]
-		//R[i] = XOR(L[i - 1], funRK(R[i - 1], kChild[i]))
+		
 		ER[i - 1] = getERn(R[i - 1], E)
-		ERXORK[i-1] = XOR(ER[i - 1], kChild48[i])
-		ERXORK_8x6[i-1] =  letERXORK_8x6(ERXORK[i-1])  
-		ERXORK_8x4[i-1] = 
-		console.log("第",i,"轮，ER[",i-1,"]为",ER[i - 1],"\nERXORK_8x6[",i-1,"]为",ERXORK_8x6[i-1])
+		ERXORK[i - 1] = XOR(ER[i - 1], kChild48[i])
+		ERXORK_8x6[i - 1] = letERXORK_8x6(ERXORK[i - 1])
+		ERXORK_8x4[i - 1] = getERXORK_8x4(ERXORK_8x6[i - 1], S1, S2, S3, S4, S5, S6, S7, S8, P)
+
+		// console.log(L[i-1], getPDisplace(ERXORK_8x4[0], P))
+		R[i] = XOR(L[i - 1], getPDisplace(ERXORK_8x4[0], P))
+		console.log("第", i, "轮，\nER[", i - 1, "]为", ER[i - 1], "\nERXORK_8x6[", i - 1, "]为", ERXORK_8x6[i - 1],`\nL[${i}]为`,L[i], `\nR${i}为`, R[
+			i])
 	}
-		console.log('L:', L, 'R', R)
+	// console.log('L:', L, 'R:', R)
 }
 
 
@@ -126,17 +149,17 @@ function funRK(Rn, Km) {
 }
 
 /**
- * 对ER(n-1)和kChild(n)进行异或处理
- * @param {Object} ERm
- * @param {Object} Kn
+ * 对a和b进行异或处理
+ * @param {Object} a
+ * @param {Object} b
  */
-function XOR(ERm, Kn) {
+function XOR(a, b) {
 	let result = []
 	// let ERn = getERn()
-	for (let i = 0; i < 48; i++) {
-		result[i] = ERm[i] ^ Kn[i]
+	for (let i = 0; i < a.length; i++) {
+		result[i] = a[i] ^ b[i]
 	}
-	console.log(result)
+	// console.log(result)
 	return result
 }
 
@@ -146,27 +169,35 @@ function XOR(ERm, Kn) {
  * @param {Object} E
  */
 function getERn(Rn, E) {
-	console.log('Rn', Rn)
+	// console.log('Rn', Rn)
 	let ERn = []
 	for (let i = 0; i < 48; i++) {
 		ERn[i] = Rn[E[i] - 1]
 	}
 	// console.log('ERn', ERn)
 	return ERn
-
 }
 
 /**
  * 将ERXORK的结果分成8*6组
  * @param {Object} ERXORK
  */
-function letERXORK_8x6(ERXORK){
-	let ERXORK_8x6 = [[],[],[],[],[],[],[],[]]
-	for(let i = 0;i<48;i++){
+function letERXORK_8x6(ERXORK) {
+	let ERXORK_8x6 = [
+		[],
+		[],
+		[],
+		[],
+		[],
+		[],
+		[],
+		[]
+	]
+	for (let i = 0; i < 48; i++) {
 		// console.log(i%6)
-		ERXORK_8x6[Math.floor(i/6)][i%6] = ERXORK[i]
+		ERXORK_8x6[Math.floor(i / 6)][i % 6] = ERXORK[i]
 	}
-	console.log('ERXORK_8x6',ERXORK_8x6)
+	// console.log('ERXORK_8x6', ERXORK_8x6)
 	return ERXORK_8x6
 }
 /**
@@ -180,7 +211,68 @@ function letERXORK_8x6(ERXORK){
  * @param {Object} S6
  * @param {Object} S7
  * @param {Object} S8
+ * @param {Object} P
  */
-function getERXORK_8x4(ERXORK_8x6,S1,S2,S3,S4,S5,S6,S7,S8){
-	
+function getERXORK_8x4(ERXORK_8x6n, S1, S2, S3, S4, S5, S6, S7, S8, P) {
+	let ERXORK_8x4 = []
+	let Srow = 0;
+	let Scol = 0;
+	let S = [S1, S2, S3, S4, S5, S6, S7, S8]
+	let f = []
+	let result = [
+		[],
+		[],
+		[],
+		[],
+		[],
+		[],
+		[],
+		[]
+	]
+	for (let i = 0; i < 8; i++) {
+		//获取首位与尾位进行字符串拼接并将其从二进制形式转换成十进制，即S盒行数
+		Srow = parseInt(ERXORK_8x6n[i][0].toString() + ERXORK_8x6n[i][5], 2)
+		//获取中间4位进行字符串拼接并将其从二进制形式转换成十进制，即S盒列数
+		Scol = parseInt(ERXORK_8x6n[i][1].toString() + ERXORK_8x6n[i][2] + ERXORK_8x6n[i][3] + ERXORK_8x6n[i][4], 2)
+		// 根据对应S盒行列获取值，并转换成二进制
+		ERXORK_8x4[i] = S[i][Srow][Scol].toString(2)
+		// 字符串转换为数组
+		ERXORK_8x4[i] = ERXORK_8x4[i].split('')
+		// 将上两步字符串转换为二进制后的高位缺0补齐
+		for (;;) {
+			if (ERXORK_8x4[i].length < 4) {
+				ERXORK_8x4[i].unshift('0')
+			} else if (ERXORK_8x4[i].length == 4) {
+				break
+			}
+		}
+
+
+	}
+	// console.log(ERXORK_8x4)
+	return ERXORK_8x4
+
+
+}
+
+/**
+ * 获取P盒置换结果
+ * @param {Object} ERXORK_8x4n
+ * @param {Object} P
+ */
+function getPDisplace(ERXORK_8x4n, P) {
+	let f = []
+	let ERXORK_32n = []
+	for (let i = 0; i < ERXORK_8x4n.length; i++) {
+		ERXORK_32n.push(...ERXORK_8x4n[i])
+		// for(let j = 0;j<ERXORK_8x4n[i].length;j++){
+
+		// }
+	}
+	// console.log(ERXORK_32n,P)
+	for (let i = 0; i < 32; i++) {
+		f[i] = ERXORK_32n[P[i] - 1]
+	}
+	// console.log('f', f)
+	return f
 }
