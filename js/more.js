@@ -119,34 +119,32 @@ function getFinal({
 	S6,
 	S7,
 	S8,
-	P
+	P,
+	finalDisplaceArr
 }) {
 	L.push([])
 	R.push([])
 	L[0] = IP.slice(0, 32)
 	R[0] = IP.slice(32)
 
-	console.log(kChild48[1])
+	// console.log(kChild48[1])
 	for (let i = 1; i < 17; i++) {
 		L[i] = R[i - 1]
-		 
+
 		ER[i - 1] = getERn(R[i - 1], E)
 		ERXORK[i - 1] = XOR(ER[i - 1], kChild48[i])
 		ERXORK_8x6[i - 1] = letERXORK_8x6(ERXORK[i - 1])
 		ERXORK_8x4[i - 1] = getERXORK_8x4(ERXORK_8x6[i - 1], S1, S2, S3, S4, S5, S6, S7, S8, P)
-
-		// console.log(L[i-1], getPDisplace(ERXORK_8x4[0], P))
+		console.log('P置换', getPDisplace(ERXORK_8x4[i - 1], P))
+		console.log('P置换', binary2Hex(getPDisplace(ERXORK_8x4[i - 1], P)))
 		R[i] = XOR(L[i - 1], getPDisplace(ERXORK_8x4[0], P))
-		console.log("第", i, "轮，\nER[", i - 1, "]为", ER[i - 1], "\nERXORK_8x6[", i - 1, "]为", ERXORK_8x6[i - 1],`\nL[${i}]为`,L[i], `\nR${i}为`, R[
-			i])
+		console.log("第", i, "轮，\nER[", i - 1, "]为", ER[i - 1], "\nERXORK_8x6[", i - 1, "]为", ERXORK_8x6[i - 1], `\nL[${i}]为`,
+			L[i], `\nR${i}为`, R[i], `\nR${i}为`,binary2Hex(R[i]))
 	}
+	return getFinalDisplace(L[16], R[16], finalDisplaceArr)
 	// console.log('L:', L, 'R:', R)
 }
 
-
-function funRK(Rn, Km) {
-
-}
 
 /**
  * 对a和b进行异或处理
@@ -249,7 +247,9 @@ function getERXORK_8x4(ERXORK_8x6n, S1, S2, S3, S4, S5, S6, S7, S8, P) {
 
 
 	}
-	// console.log(ERXORK_8x4)
+	console.log('S盒', binary2Hex(ERXORK_8x4[0]), binary2Hex(ERXORK_8x4[1]), binary2Hex(ERXORK_8x4[2]), binary2Hex(
+		ERXORK_8x4[3]), binary2Hex(ERXORK_8x4[4]), binary2Hex(ERXORK_8x4[5]), binary2Hex(ERXORK_8x4[6]), binary2Hex(
+		ERXORK_8x4[7]))
 	return ERXORK_8x4
 
 
@@ -275,4 +275,92 @@ function getPDisplace(ERXORK_8x4n, P) {
 	}
 	// console.log('f', f)
 	return f
+}
+
+/**
+ * 进行最终的置换
+ * @param {Object} L16
+ * @param {Object} R16
+ * @param {Object} finalDisplace
+ */
+function getFinalDisplace(L16, R16, finalDisplaceArr) {
+	let Arr = JSON.parse(JSON.stringify(R16)).concat(L16)
+	// console.log(finalDisplaceArr)
+	let result = []
+	for (let i = 0; i < finalDisplaceArr.length; i++) {
+		result[i] = Arr[finalDisplaceArr[i] - 1]
+	}
+	console.log(result)
+	return result
+}
+
+
+function binary2Hex(binary) {
+	let hex = []
+	let t = ''
+	let hex_array = [{
+		key: 0,
+		val: "0000"
+	}, {
+		key: 1,
+		val: "0001"
+	}, {
+		key: 2,
+		val: "0010"
+	}, {
+		key: 3,
+		val: "0011"
+	}, {
+		key: 4,
+		val: "0100"
+	}, {
+		key: 5,
+		val: "0101"
+	}, {
+		key: 6,
+		val: "0110"
+	}, {
+		key: 7,
+		val: "0111"
+	}, {
+		key: 8,
+		val: "1000"
+	}, {
+		key: 9,
+		val: "1001"
+	}, {
+		key: 'a',
+		val: "1010"
+	}, {
+		key: 'b',
+		val: "1011"
+	}, {
+		key: 'c',
+		val: "1100"
+	}, {
+		key: 'd',
+		val: "1101"
+	}, {
+		key: 'e',
+		val: "1110"
+	}, {
+		key: 'f',
+		val: "1111"
+	}]
+
+	for (let i = 0; i < binary.length; i++) {
+		if (i % 4 == 3) {
+			t = binary[i - 3].toString() + binary[i - 2] + binary[i - 1] + binary[i]
+			// console.log(i)
+			for (let j = 0; j < hex_array.length; j++) {
+				if (t == hex_array[j].val) {
+					hex.push(hex_array[j].key)
+				}
+			}
+		} else {
+			continue
+		}
+	}
+
+	return hex
 }
