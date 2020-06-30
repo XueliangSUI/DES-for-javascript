@@ -57,11 +57,11 @@ function getCDArr(C, D, k56) {
  */
 function moveLeft(Arr, bit) {
 	let tArr = JSON.parse(JSON.stringify(Arr))
-	let t = tArr.slice(0,bit)
+	let t = tArr.slice(0, bit)
 	for (let i = bit; i < tArr.length; i++) {
 		tArr[i - bit] = tArr[i]
 	}
-	tArr.splice(tArr.length-bit)
+	tArr.splice(tArr.length - bit)
 	tArr.push(...t)
 	// console.log(t)
 	return tArr
@@ -73,14 +73,14 @@ function moveLeft(Arr, bit) {
  * @param {Object} D
  * @param {Object} PC_2
  */
-function getKChildArr(C,D,PC_2){
+function getKChildArr(C, D, PC_2) {
 	let kChild = [];
-	for(let i=0;i<C.length;i++){
+	for (let i = 0; i < C.length; i++) {
 		kChild.push([])
-		for(let j =0;j<PC_2.length;j++){
-			kChild[i][j] =C[i].concat(D[i])[PC_2[j]-1] 
+		for (let j = 0; j < PC_2.length; j++) {
+			kChild[i][j] = C[i].concat(D[i])[PC_2[j] - 1]
 		}
-		
+
 	}
 	// console.log(kChild)
 	return kChild
@@ -91,23 +91,96 @@ function getKChildArr(C,D,PC_2){
  * @param {Object} M
  * @param {Object} initDisplace
  */
-function letMDisplace(M,initDisplace){
+function letMDisplace(M, initDisplace) {
 	let IP = []
-	for(let i=0;i<initDisplace.length;i++){
-		IP[i] = M[initDisplace[i]-1]
+	for (let i = 0; i < initDisplace.length; i++) {
+		IP[i] = M[initDisplace[i] - 1]
 	}
 	// console.log(IP)
 	return IP
 }
 
 
-function getFinal(L,R,IP,kChild){
-	L[0] = IP.slice(0,32)
+function getFinal({L, R, IP, kChild48, E,ER,ERXORK,ERXORK_8x6,ERXORK_8x4,S1,S2,S3,S4,S5,S6,S7,S8}) {
+	L.push([])
+	R.push([])
+	L[0] = IP.slice(0, 32)
 	R[0] = IP.slice(32)
-	for(let i=1;i<17;i++){
-		L[i] = R[i-1]
-		//************************************
-		R[i] = L[i-1]
+
+	console.log(kChild48[1])
+	for (let i = 1; i < 17; i++) {
+		L[i] = R[i - 1]
+		//R[i] = XOR(L[i - 1], funRK(R[i - 1], kChild[i]))
+		ER[i - 1] = getERn(R[i - 1], E)
+		ERXORK[i-1] = XOR(ER[i - 1], kChild48[i])
+		ERXORK_8x6[i-1] =  letERXORK_8x6(ERXORK[i-1])  
+		ERXORK_8x4[i-1] = 
+		console.log("第",i,"轮，ER[",i-1,"]为",ER[i - 1],"\nERXORK_8x6[",i-1,"]为",ERXORK_8x6[i-1])
 	}
-	console.log(L,R)
+		console.log('L:', L, 'R', R)
+}
+
+
+function funRK(Rn, Km) {
+
+}
+
+/**
+ * 对ER(n-1)和kChild(n)进行异或处理
+ * @param {Object} ERm
+ * @param {Object} Kn
+ */
+function XOR(ERm, Kn) {
+	let result = []
+	// let ERn = getERn()
+	for (let i = 0; i < 48; i++) {
+		result[i] = ERm[i] ^ Kn[i]
+	}
+	console.log(result)
+	return result
+}
+
+/**
+ * 获取ERn，也就是将R进行E处理
+ * @param {Object} Rn
+ * @param {Object} E
+ */
+function getERn(Rn, E) {
+	console.log('Rn', Rn)
+	let ERn = []
+	for (let i = 0; i < 48; i++) {
+		ERn[i] = Rn[E[i] - 1]
+	}
+	// console.log('ERn', ERn)
+	return ERn
+
+}
+
+/**
+ * 将ERXORK的结果分成8*6组
+ * @param {Object} ERXORK
+ */
+function letERXORK_8x6(ERXORK){
+	let ERXORK_8x6 = [[],[],[],[],[],[],[],[]]
+	for(let i = 0;i<48;i++){
+		// console.log(i%6)
+		ERXORK_8x6[Math.floor(i/6)][i%6] = ERXORK[i]
+	}
+	console.log('ERXORK_8x6',ERXORK_8x6)
+	return ERXORK_8x6
+}
+/**
+ * 将ERXORK_8x6经过S盒置换生成ERXORK8x4
+ * @param {Object} ERXORK_8x6
+ * @param {Object} S1
+ * @param {Object} S2
+ * @param {Object} S3
+ * @param {Object} S4
+ * @param {Object} S5
+ * @param {Object} S6
+ * @param {Object} S7
+ * @param {Object} S8
+ */
+function getERXORK_8x4(ERXORK_8x6,S1,S2,S3,S4,S5,S6,S7,S8){
+	
 }
