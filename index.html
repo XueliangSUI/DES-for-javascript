@@ -13,11 +13,9 @@
 					<input type="" name="" id="" value="" maxlength="16" placeholder="16位十六进制明文" v-model="MStr" @input="reEncode" />
 				</div>
 				<div id="">
-					<input type="" name="" id="" value="" maxlength="16" placeholder="16位十六进制秘钥" v-model="KStr" @input="reEncode" />
+					<input type="" name="" id="" value="" maxlength="16" placeholder="16位十六进制秘钥" v-model="kStr" @input="reEncode" />
 				</div>
-				<div class="button-red">
-					加密
-				</div>
+				
 			</div>
 			<div id="">
 				最终逆置换结果二进制密文{{finalDisplaceResult}}
@@ -25,12 +23,15 @@
 			<div id="">
 				十六进制密文{{ciphertext}}
 			</div>
-			<div id="">
+			<div class="button-red">
+				解密
+			</div>
+			<!-- <div id="">
 				k16 {{kHex}}
-			</div>
-			<div id="">
+			</div> -->
+			<!-- <div id="">
 				k64 {{k64}}
-			</div>
+			</div> -->
 			<div id="">
 				k64Arr {{k64Arr}}
 			</div>
@@ -53,10 +54,10 @@
 				明文初始置换IP{{IP}}
 			</div>
 
-			<div id="" v-for="(v,i) in L">
+			<div id="" v-for="(v,i) in L" v-if="i<17">
 				L{{i}} = {{v}}
 			</div>
-			<div id="" v-for="(v,i) in R">
+			<div id="" v-for="(v,i) in R" v-if="i<17">
 				R{{i}} = {{v}}
 			</div>
 			<div id="" v-for="(v,i) in ER">
@@ -189,9 +190,8 @@
 				data: function() {
 					return {
 						MStr: '0000000000000000',
-						MHex: ['0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0'],
-						M: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-							0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+						MHex: [],
+						M: [
 						],
 						IP: [],
 						L: [],
@@ -200,11 +200,10 @@
 						ERXORK: [],
 						ERXORK_8x6: [],
 						ERXORK_8x4: [],
-						KStr: '0000000000000000',
-						kHex: ['0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0', '0'],
-						k64: ['00000000', ' 00000000', '00000000', '00000000', '00000000', '00000000', '00000000', '00000000'],
-						k64Arr: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-							0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+						kStr: '0000000000000000',
+						kHex: [],
+						k64: [],
+						k64Arr: [
 						],
 						k56: [],
 						C: [],
@@ -353,6 +352,12 @@
 				},
 				methods:{
 					reEncode:function(){
+						//输入明文及秘钥字符串转换成二进制数组
+						this.MHex = this.MStr.split('')
+						this.kHex = this.kStr.split('')
+						this.M = hex2Binary(this.MHex)
+						this.k64Arr = hex2Binary(this.kHex)
+						console.log(this.kHex)
 						//64位key经过PC-1转换成56位
 						this.k56 = k64Tok56(this.k64Arr, this.PC_1Arr)
 						//获得16轮的C和D，拼接形成16轮的K，再用PC-2生成16个childK

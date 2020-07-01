@@ -137,9 +137,9 @@ function getFinal({
 		ERXORK_8x4[i - 1] = getERXORK_8x4(ERXORK_8x6[i - 1], S1, S2, S3, S4, S5, S6, S7, S8, P)
 		// console.log('P置换', getPDisplace(ERXORK_8x4[i - 1], P))
 		console.log('P置换', binary2Hex(getPDisplace(ERXORK_8x4[i - 1], P)))
-		R[i] = XOR(L[i - 1], getPDisplace(ERXORK_8x4[i-1], P))
+		R[i] = XOR(L[i - 1], getPDisplace(ERXORK_8x4[i - 1], P))
 		console.log("第", i, "轮，\nER[", i - 1, "]为", ER[i - 1], "\nERXORK_8x6[", i - 1, "]为", ERXORK_8x6[i - 1], `\nL[${i}]为`,
-			L[i], `\nR${i}为`, R[i], `\nR${i}为`,binary2Hex(R[i]))
+			L[i], `\nR${i}为`, R[i], `\nR${i}为`, binary2Hex(R[i]))
 	}
 	return getFinalDisplace(L[16], R[16], finalDisplaceArr)
 	// console.log('L:', L, 'R:', R)
@@ -373,7 +373,7 @@ function binary2Hex(binary) {
  * @param {Object} hex
  */
 function hex2Binary(hex) {
-	let binary = []
+	let binary = ''
 	let t = ''
 	let hex_array = [{
 		key: 0,
@@ -424,20 +424,18 @@ function hex2Binary(hex) {
 		key: 'f',
 		val: "1111"
 	}]
-
+	console.log(hex)
 	for (let i = 0; i < hex.length; i++) {
-		if (i % 4 == 3) {
-			t = hex[i - 3].toString() + hex[i - 2] + hex[i - 1] + hex[i]
-			// console.log(i)
-			for (let j = 0; j < hex_array.length; j++) {
-				if (t == hex_array[j].val) {
-					hex.push(hex_array[j].key)
-				}
+			console.log(hex_array[i].val)
+		t = hex[i].toString()
+		for(let j = 0;j<hex_array.length;j++){
+			if (t == hex_array[j].key) {
+				console.log(hex_array[j].val)
+				binary = binary.toString() +hex_array[j].val
 			}
-		} else {
-			continue
 		}
+		
 	}
-
-	return binary
+	console.log(binary)
+	return binary.split('')
 }
