@@ -87,6 +87,30 @@ function getKChildArr(C, D, PC_2) {
 }
 
 /**
+ * 获取{解码模式的}16组子秘钥
+ * 将kChild1-16倒过来
+ * @param {Object} C
+ * @param {Object} D
+ * @param {Object} PC_2
+ */
+function getDecodeKChildArr(C, D, PC_2) {
+	let kChild = [];
+	console.log(C.length)
+	for (let i = 0; i < C.length; i++) {
+		kChild.push([])
+		if(i == 0){
+			continue
+		}
+		for (let j = 0; j < PC_2.length; j++) {
+			kChild[i][j] = C[C.length-i].concat(D[D.length-i])[PC_2[j] - 1]
+		}
+
+	}
+	// console.log(kChild)
+	return kChild
+}
+
+/**
  * 使明文进行初始化置换
  * @param {Object} M
  * @param {Object} initDisplace
@@ -100,7 +124,9 @@ function letMDisplace(M, initDisplace) {
 	return IP
 }
 
-
+/**
+ * 加密的最后一大步，很多步骤
+ */
 function getFinal({
 	L,
 	R,
@@ -426,11 +452,11 @@ function hex2Binary(hex) {
 	}]
 	console.log(hex)
 	for (let i = 0; i < hex.length; i++) {
-			console.log(hex_array[i].val)
+			// console.log(hex_array[i].val)
 		t = hex[i].toString()
 		for(let j = 0;j<hex_array.length;j++){
 			if (t == hex_array[j].key) {
-				console.log(hex_array[j].val)
+				// console.log(hex_array[j].val)
 				binary = binary.toString() +hex_array[j].val
 			}
 		}

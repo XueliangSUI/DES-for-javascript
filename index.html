@@ -15,7 +15,7 @@
 				<div id="">
 					<input type="" name="" id="" value="" maxlength="16" placeholder="16位十六进制秘钥" v-model="kStr" @input="reEncode" />
 				</div>
-				
+
 			</div>
 			<div id="">
 				最终逆置换结果二进制密文{{finalDisplaceResult}}
@@ -23,8 +23,11 @@
 			<div id="">
 				十六进制密文{{ciphertext.join('')}}
 			</div>
-			<div class="button-red">
+			<div class="button-red" @click="reDecode">
 				解密
+			</div>
+			<div id="">
+				解密后的明文 {{decodetext}}
 			</div>
 			<!-- <div id="">
 				k16 {{kHex}}
@@ -191,8 +194,7 @@
 					return {
 						MStr: '0000000000000000',
 						MHex: [],
-						M: [
-						],
+						M: [],
 						IP: [],
 						L: [],
 						R: [],
@@ -203,8 +205,7 @@
 						kStr: '0000000000000000',
 						kHex: [],
 						k64: [],
-						k64Arr: [
-						],
+						k64Arr: [],
 						k56: [],
 						C: [],
 						D: [],
@@ -212,6 +213,7 @@
 						kChild48: [],
 						finalDisplaceResult: [],
 						ciphertext: [],
+						decodetext: [],
 						initDisplace: [
 							[58, 50, 42, 34, 26, 18, 10, 2],
 							[60, 52, 44, 36, 28, 20, 12, 4],
@@ -350,8 +352,8 @@
 				mounted: function() {
 					this.reEncode()
 				},
-				methods:{
-					reEncode:function(){
+				methods: {
+					reEncode: function() {
 						//输入明文及秘钥字符串转换成二进制数组
 						this.MHex = this.MStr.split('')
 						this.kHex = this.kStr.split('')
@@ -369,6 +371,24 @@
 						this.finalDisplaceResult = getFinal(this.$data)
 						//将二进制逆置换结果转换为16进制密文
 						this.ciphertext = binary2Hex(this.finalDisplaceResult)
+					},
+					reDecode: function() {
+						this.MHex = this.ciphertext
+						this.kHex = this.kStr.split('')
+						this.M = hex2Binary(this.MHex)
+						this.k64Arr = hex2Binary(this.kHex)
+						console.log(this.kHex)
+						//64位key经过PC-1转换成56位
+						this.k56 = k64Tok56(this.k64Arr, this.PC_1Arr)
+						//获得16轮的C和D，拼接形成16轮的K，再用PC-2生成16个childK
+						getCDArr(this.C, this.D, this.k56)
+						this.kChild48 = getDecodeKChildArr(this.C, this.D, this.PC_2Arr)
+						//明文初始置换
+						this.IP = letMDisplace(this.M, this.initDisplaceArr)
+						//16轮计算，得出最终区块
+						this.finalDisplaceResult = getFinal(this.$data)
+						//将二进制逆置换结果转换为16进制密文
+						this.decodetext = binary2Hex(this.finalDisplaceResult)
 					}
 				}
 			})
