@@ -8,54 +8,57 @@
 	</head>
 	<body>
 		<div id="app">
-			<div id="">
+			<div class="block">
 				<div id="">
-					<input type="" name="" id="" value="" maxlength="16" placeholder="16位十六进制明文" v-model="MStr" @input="reEncode" />
-				</div>
-				<div id="">
-					<input type="" name="" id="" value="" maxlength="16" placeholder="16位十六进制秘钥" v-model="kStr" @input="reEncode" />
-				</div>
+					<div id="">
+						<input type="" name="" id="" value="" maxlength="16" placeholder="16位十六进制明文" v-model="MStr" @input="reEncode" />
+					</div>
+					<div id="">
+						<input type="" name="" id="" value="" maxlength="16" placeholder="16位十六进制秘钥" v-model="kStr" @input="reEncode" />
+					</div>
 				
-			</div>
-			<div id="">
-				最终逆置换结果二进制密文{{finalDisplaceResult}}
-			</div>
-			<div id="">
-				十六进制密文{{ciphertext.join('')}}
-			</div>
-			<div class="button-red" @click="reDecode">
-				解密
-			</div>
-			<div id="">
-				解密后的明文 {{decodetext}}
-			</div>
-			
-			<div id="">
-				<input type="" name="" id="" value=""  placeholder="任意长度的中文,数字,字符" v-model="ChineseStr" @input="reEncodeChinese" />
-			</div>
-			<div id="">
-				中文明文转换成16进制数组 {{ChineseArr}}
-			</div>
-			<div id="">
-				中文明文转换成16进制数组后过滤% {{ChineseHexArr}}
+				</div>
+				<div id="">
+					最终逆置换结果二进制密文{{finalDisplaceResult}}
+				</div>
+				<div id="">
+					十六进制密文{{ciphertext.join('')}}
+				</div>
+				<div class="button-red" @click="reDecode">
+					解密
+				</div>
+				<div id="" class="finaltext">
+					解密后的明文 {{decodetext}}
+				</div>
 			</div>
 			
-			<div id="">
-				中文加密后的密文{{Chineseciphertext}}
+			<div class="block">
+				<div id="">
+					<input type="" name="" id="" value="" placeholder="任意长度的中文,数字,字符" v-model="ChineseStr" @input="reEncodeChinese" />
+				</div>
+				<div id="">
+					中文明文转换成16进制数组 {{ChineseArr}}
+				</div>
+				<div id="">
+					中文明文转换成16进制数组后过滤% {{ChineseHexArr}}
+				</div>
+
+				<div id="">
+					中文加密后的密文{{Chineseciphertext}}
+				</div>
+				<div class="button-red" @click="reDecodeChinese">
+					中文解密
+				</div>
+				<div id="">
+					中文解密后的十六进制结果 {{Chinesedecodetext}}
+				</div>
+				<div id="" class="finaltext">
+					中文解密后的十六进制结果转化为中文文本:{{ChinesedecodetexttoChinese.join('')}}
+				</div>
 			</div>
-			<div class="button-red" @click="reDecode">
-				中文解密
-			</div>
-			<div id="">
-				中文解密后的明文 {{Chinesedecodetext}}
-			</div>
-			
-			<!-- <div id="">
-				k16 {{kHex}}
-			</div> -->
-			<!-- <div id="">
-				k64 {{k64}}
-			</div> -->
+
+
+
 			<div id="">
 				k64Arr {{k64Arr}}
 			</div>
@@ -213,9 +216,9 @@
 				el: "#app",
 				data: function() {
 					return {
-						ChineseStr:'',
-						ChineseArr:[],
-						ChineseHexArr:[],
+						ChineseStr: '',
+						ChineseArr: [],
+						ChineseHexArr: [],
 						MStr: '0000000000000000',
 						MHex: [],
 						M: [],
@@ -237,9 +240,10 @@
 						kChild48: [],
 						finalDisplaceResult: [],
 						ciphertext: [],
-						Chineseciphertext:[],
+						Chineseciphertext: [],
 						decodetext: [],
-						Chinesedecodetext:[],
+						Chinesedecodetext: [],
+						ChinesedecodetexttoChinese: [],
 						initDisplace: [
 							[58, 50, 42, 34, 26, 18, 10, 2],
 							[60, 52, 44, 36, 28, 20, 12, 4],
@@ -399,38 +403,40 @@
 						this.ciphertext = binary2Hex(this.finalDisplaceResult)
 					},
 					/**
-					 * 中文解密按钮
+					 * 解密按钮
 					 */
 					reDecode: function() {
-						for(let i = 0;i<this.Chineseciphertext.length;i++){
-							this.MHex = this.Chineseciphertext[i]
-							console.log('this.Chineseciphertext',this.Chineseciphertext[i])
-							this.kHex = this.kStr.split('')
-							this.M = hex2Binary(this.MHex)
-							this.k64Arr = hex2Binary(this.kHex)
-							console.log(this.kHex)
-							//64位key经过PC-1转换成56位
-							this.k56 = k64Tok56(this.k64Arr, this.PC_1Arr)
-							//获得16轮的C和D，拼接形成16轮的K，再用PC-2生成16个childK
-							getCDArr(this.C, this.D, this.k56)
-							this.kChild48 = getDecodeKChildArr(this.C, this.D, this.PC_2Arr)
-							//明文初始置换
-							this.IP = letMDisplace(this.M, this.initDisplaceArr)
-							//16轮计算，得出最终区块
-							this.finalDisplaceResult = getFinal(this.$data)
-							//将二进制逆置换结果转换为16进制密文
-							this.Chinesedecodetext[i] = binary2Hex(this.finalDisplaceResult)
-						}
-						
+
+						this.MHex = this.ciphertext
+
+						this.kHex = this.kStr.split('')
+						this.M = hex2Binary(this.MHex)
+						this.k64Arr = hex2Binary(this.kHex)
+						console.log(this.kHex)
+						//64位key经过PC-1转换成56位
+						this.k56 = k64Tok56(this.k64Arr, this.PC_1Arr)
+						//获得16轮的C和D，拼接形成16轮的K，再用PC-2生成16个childK
+						getCDArr(this.C, this.D, this.k56)
+						this.kChild48 = getDecodeKChildArr(this.C, this.D, this.PC_2Arr)
+						//明文初始置换
+						this.IP = letMDisplace(this.M, this.initDisplaceArr)
+						//16轮计算，得出最终区块
+						this.finalDisplaceResult = getFinal(this.$data)
+						//将二进制逆置换结果转换为16进制密文
+						this.decodetext = binary2Hex(this.finalDisplaceResult)
+
+
 					},
 					/**
 					 * 中文加密
 					 */
-					reEncodeChinese:function(){
+					reEncodeChinese: function() {
 						this.ChineseArr = noLetter(this.ChineseStr).split('')
 						this.ChineseArr = ChineseArr2HexArr(this.ChineseArr)
-						this.ChineseHexArr  = filterHex(this.ChineseArr)
-						for(let i = 0 ;i<this.ChineseHexArr.length;i++){
+						this.ChineseHexArr = filterHex(this.ChineseArr)
+
+						for (let i = 0; i < this.ChineseHexArr.length; i++) {
+							this.ChineseHexArr[i] = this.ChineseHexArr[i].toLowerCase()
 							this.MHex = this.ChineseHexArr[i]
 							this.kHex = this.kStr.split('')
 							this.M = hex2Binary(this.MHex)
@@ -448,7 +454,35 @@
 							//将二进制逆置换结果转换为16进制密文
 							this.Chineseciphertext[i] = binary2Hex(this.finalDisplaceResult)
 						}
-						console.log('Chineseciphertext',this.Chineseciphertext)
+						console.log('Chineseciphertext', this.Chineseciphertext)
+					},
+					/**
+					 * 中文解密
+					 */
+					reDecodeChinese: function() {
+						for (let i = 0; i < this.Chineseciphertext.length; i++) {
+							this.MHex = this.Chineseciphertext[i]
+							console.log('this.Chineseciphertext', this.Chineseciphertext[i])
+							this.kHex = this.kStr.split('')
+							this.M = hex2Binary(this.MHex)
+							this.k64Arr = hex2Binary(this.kHex)
+							console.log(this.kHex)
+							//64位key经过PC-1转换成56位
+							this.k56 = k64Tok56(this.k64Arr, this.PC_1Arr)
+							//获得16轮的C和D，拼接形成16轮的K，再用PC-2生成16个childK
+							getCDArr(this.C, this.D, this.k56)
+							this.kChild48 = getDecodeKChildArr(this.C, this.D, this.PC_2Arr)
+							//明文初始置换
+							this.IP = letMDisplace(this.M, this.initDisplaceArr)
+							//16轮计算，得出最终区块
+							this.finalDisplaceResult = getFinal(this.$data)
+							//将二进制逆置换结果转换为16进制密文
+							this.Chinesedecodetext[i] = binary2Hex(this.finalDisplaceResult)
+							// 转换为大写，十六进制
+							this.Chinesedecodetext[i] = this.Chinesedecodetext[i].join('').toUpperCase().split('')
+							this.ChinesedecodetexttoChinese[i] = getChinese(this.Chinesedecodetext[i])
+						}
+
 					}
 				}
 			})

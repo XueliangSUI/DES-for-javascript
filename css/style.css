@@ -7,8 +7,22 @@
 	width:40px;
 	text-align: center;
 }
+
+.block{
+	border: 1px solid lightcoral;
+	border-radius: 10px;
+	padding: 20px;
+	margin: 40px;
+}
+
+.finaltext{
+	color: white;
+	background-color: indianred;
+}
+
 /* 按钮——红 */
 .button-red {
+	margin: 20px 0;
 	text-align: center;
 	line-height: 8vmin;
 	font-size: 3vmin;
