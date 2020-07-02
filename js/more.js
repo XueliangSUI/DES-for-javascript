@@ -152,17 +152,18 @@ function getFinal({
 	R.push([])
 	L[0] = IP.slice(0, 32)
 	R[0] = IP.slice(32)
-
-	// console.log(kChild48[1])
 	for (let i = 1; i < 17; i++) {
 		L[i] = R[i - 1]
-
+		// 对R进行E处理
 		ER[i - 1] = getERn(R[i - 1], E)
+		// 对E处理后的R与子秘钥异或处理
 		ERXORK[i - 1] = XOR(ER[i - 1], kChild48[i])
+		// 扩展成8*6
 		ERXORK_8x6[i - 1] = letERXORK_8x6(ERXORK[i - 1])
+		// 经过S盒运算，生成8*4
 		ERXORK_8x4[i - 1] = getERXORK_8x4(ERXORK_8x6[i - 1], S1, S2, S3, S4, S5, S6, S7, S8, P)
-		// console.log('P置换', getPDisplace(ERXORK_8x4[i - 1], P))
 		console.log('P置换', binary2Hex(getPDisplace(ERXORK_8x4[i - 1], P)))
+		// L与P置换结果异或
 		R[i] = XOR(L[i - 1], getPDisplace(ERXORK_8x4[i - 1], P))
 		console.log("第", i, "轮，\nER[", i - 1, "]为", ER[i - 1], "\nERXORK_8x6[", i - 1, "]为", ERXORK_8x6[i - 1], `\nL[${i}]为`,
 			L[i], `\nR${i}为`, R[i], `\nR${i}为`, binary2Hex(R[i]))
@@ -193,12 +194,10 @@ function XOR(a, b) {
  * @param {Object} E
  */
 function getERn(Rn, E) {
-	// console.log('Rn', Rn)
 	let ERn = []
 	for (let i = 0; i < 48; i++) {
 		ERn[i] = Rn[E[i] - 1]
 	}
-	// console.log('ERn', ERn)
 	return ERn
 }
 
@@ -291,15 +290,11 @@ function getPDisplace(ERXORK_8x4n, P) {
 	let ERXORK_32n = []
 	for (let i = 0; i < ERXORK_8x4n.length; i++) {
 		ERXORK_32n.push(...ERXORK_8x4n[i])
-		// for(let j = 0;j<ERXORK_8x4n[i].length;j++){
-
-		// }
 	}
 	// console.log(ERXORK_32n,P)
 	for (let i = 0; i < 32; i++) {
 		f[i] = ERXORK_32n[P[i] - 1]
 	}
-	// console.log('f', f)
 	return f
 }
 
@@ -467,7 +462,10 @@ function hex2Binary(hex) {
 }
 
 
-
+/**
+ * 过滤掉字符串中的字母
+ * @param {Object} str
+ */
 function noLetter(str) {
 	let result = ''
 	let reg = /[a-zA-Z]+/
@@ -492,7 +490,10 @@ function ChineseArr2HexArr(ChineseArr) {
 	return HexArr
 }
 
-
+/**
+ * 过滤字符串中的
+ * @param {Object} ChineseArr
+ */
 function filterHex(ChineseArr) {
 	let ChineseHexArr = []
 	for (let i = 0; i < ChineseArr.length; i++) {
@@ -503,49 +504,60 @@ function filterHex(ChineseArr) {
 	return ChineseHexArr
 }
 
+/**
+ * 十六进制数组拼接成转义序列，并调用转义序列转换成对应字符函数
+ * @param {Object} Arr
+ */
 function getChinese(Arr) {
 	let t = ''
 	let str = ''
 	if (Arr[1] == '0') {
 		return Arr[0]
 	} else if (Arr[6] == '0') {
-		str = '%'+Arr[0]+Arr[1]+'%'+Arr[2]+Arr[3]+'%'+Arr[4]+Arr[5]
+		str = '%' + Arr[0] + Arr[1] + '%' + Arr[2] + Arr[3] + '%' + Arr[4] + Arr[5]
 		return utf8to16(unescape(str))
 	}
-	
+
 }
 
 /**
+ * 输入十六进制转义序列，输出对应汉字、符号
  * 来源：网络 博客园 172257861
  * https://www.cnblogs.com/kool/p/6695667.html
  */
 function utf8to16(str) {
-    var out, i, len, c;
-    var char2, char3;
-    out = "";
-    len = str.length;
-    i = 0;
-    while(i < len) {
-		 c = str.charCodeAt(i++);
-		 switch(c >> 4)
-		 { 
-		   case 0: case 1: case 2: case 3: case 4: case 5: case 6: case 7:
-			 out += str.charAt(i-1);
-			 break;
-		   case 12: case 13:
-			 char2 = str.charCodeAt(i++);
-			 out += String.fromCharCode(((c & 0x1F) << 6) | (char2 & 0x3F));
-			 break;
-		   case 14:
-			 char2 = str.charCodeAt(i++);
-			 char3 = str.charCodeAt(i++);
-			 out += String.fromCharCode(((c & 0x0F) << 12) |
-				((char2 & 0x3F) << 6) |
-				((char3 & 0x3F) << 0));
-			 break;
-		 }
-    }
+	var out, i, len, c;
+	var char2, char3;
+	out = "";
+	len = str.length;
+	i = 0;
+	while (i < len) {
+		c = str.charCodeAt(i++);
+		switch (c >> 4) {
+			case 0:
+			case 1:
+			case 2:
+			case 3:
+			case 4:
+			case 5:
+			case 6:
+			case 7:
+				out += str.charAt(i - 1);
+				break;
+			case 12:
+			case 13:
+				char2 = str.charCodeAt(i++);
+				out += String.fromCharCode(((c & 0x1F) << 6) | (char2 & 0x3F));
+				break;
+			case 14:
+				char2 = str.charCodeAt(i++);
+				char3 = str.charCodeAt(i++);
+				out += String.fromCharCode(((c & 0x0F) << 12) |
+					((char2 & 0x3F) << 6) |
+					((char3 & 0x3F) << 0));
+				break;
+		}
+	}
 
-    return out;
+	return out;
 }
-
