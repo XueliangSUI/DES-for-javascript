@@ -98,11 +98,11 @@ function getDecodeKChildArr(C, D, PC_2) {
 	console.log(C.length)
 	for (let i = 0; i < C.length; i++) {
 		kChild.push([])
-		if(i == 0){
+		if (i == 0) {
 			continue
 		}
 		for (let j = 0; j < PC_2.length; j++) {
-			kChild[i][j] = C[C.length-i].concat(D[D.length-i])[PC_2[j] - 1]
+			kChild[i][j] = C[C.length - i].concat(D[D.length - i])[PC_2[j] - 1]
 		}
 
 	}
@@ -452,16 +452,53 @@ function hex2Binary(hex) {
 	}]
 	console.log(hex)
 	for (let i = 0; i < hex.length; i++) {
-			// console.log(hex_array[i].val)
+		// console.log(hex_array[i].val)
 		t = hex[i].toString()
-		for(let j = 0;j<hex_array.length;j++){
+		for (let j = 0; j < hex_array.length; j++) {
 			if (t == hex_array[j].key) {
 				// console.log(hex_array[j].val)
-				binary = binary.toString() +hex_array[j].val
+				binary = binary.toString() + hex_array[j].val
 			}
 		}
-		
+
 	}
 	console.log(binary)
 	return binary.split('')
+}
+
+
+
+function noLetter(str) {
+	let result = ''
+	let reg = /[a-zA-Z]+/
+	while (result = str.match(reg)) { //判断str.match(reg)是否没有字母了
+		str = str.replace(result[0], '') //替换掉字母  result[0] 是 str.match(reg)匹配到的字母
+
+	}
+	// console.log(str)
+	return str
+}
+
+/**
+ * 中文字符转16进制编码
+ * @param {Object} ChineseArr
+ */
+function ChineseArr2HexArr(ChineseArr) {
+	let HexArr = []
+	for (let i = 0; i < ChineseArr.length; i++) {
+		HexArr.push([])
+		HexArr[i] = encodeURIComponent(ChineseArr[i])
+	}
+	return HexArr
+}
+
+
+function filterHex(ChineseArr) {
+	let ChineseHexArr = []
+	for (let i = 0; i < ChineseArr.length; i++) {
+		ChineseHexArr.push([])
+		console.log(ChineseArr[i])
+		ChineseHexArr[i] = ChineseArr[i].split("%").join("")
+	}
+	return ChineseHexArr
 }
