@@ -37,7 +37,7 @@
 
 			<div class="block">
 				<div class="title">
-					DES EBC模式，可加密无限长度中文、数字、字符，不可加密英文字母，输入后若删除会有bug
+					DES ECB模式，可加密无限长度中文、数字、字符，不可加密英文字母，输入后若删除会有bug
 				</div>
 				<div id="">
 					<input type="" name="" id="" value="" placeholder="任意长度的中文,数字,字符" v-model="ChineseStr" @input="reEncodeChinese" />
@@ -394,6 +394,7 @@
 					}
 				},
 				mounted: function() {
+					// 网页加载时对初始明文进行一次加密
 					this.reEncode()
 				},
 				methods: {

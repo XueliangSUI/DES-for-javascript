@@ -1,3 +1,8 @@
+/**
+ * PC-1置换，64位key转换成56位
+ * @param {Object} k64
+ * @param {Object} PC_1
+ */
 function k64Tok56(k64, PC_1) {
 	// console.log(k64, PC_1[1])
 	let k56 = [];
@@ -10,7 +15,12 @@ function k64Tok56(k64, PC_1) {
 	return k56
 }
 
-
+/**
+ * 将k56拆分成左右两部分并移位
+ * @param {Object} C
+ * @param {Object} D
+ * @param {Object} k56
+ */
 function getCDArr(C, D, k56) {
 	C[0] = k56.slice(0, 28)
 	D[0] = k56.slice(28)
